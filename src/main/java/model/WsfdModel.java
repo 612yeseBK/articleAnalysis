@@ -1,19 +1,19 @@
 package model;
 
 /**
- * description:
+ * description:文书分段
  * Created by gaoyw on 2018/12/10.
  */
 public class WsfdModel {
-    private String qw;
-    private String ws;
-    private String sscyr;
-    private String ssjl;
-    private String ajjbqk;
-    private String cpfxgc;
-    private String cpjg;
-    private String ww;
-    private String fl;
+    private String qw;  //全文
+    private String ws;  //文首
+    private String sscyr;  //诉讼参与人
+    private String ssjl;  //诉讼记录
+    private String ajjbqk;  //案件基本情况
+    private String cpfxgc;  //裁判分析过程
+    private String cpjg;  //裁判结果
+    private String ww;  //文尾
+    private String fl;  //附录
 
     public WsfdModel() {
     }

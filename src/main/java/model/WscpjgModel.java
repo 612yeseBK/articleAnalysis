@@ -3,7 +3,7 @@ package model;
 import java.util.List;
 
 /**
- * description:
+ * description:裁判结果
  * Created by gaoyw on 2018/12/10.
  */
 public class WscpjgModel {

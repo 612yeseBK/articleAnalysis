@@ -1,7 +1,7 @@
 package model;
 
 /**
- * description:
+ * description:裁判结果诉讼费金额
  * Created by gaoyw on 2018/12/10.
  */
 public class WsCpjgssfjeModel {

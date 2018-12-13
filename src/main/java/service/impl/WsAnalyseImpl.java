@@ -166,7 +166,7 @@ public class WsAnalyseImpl implements WsAnalyse {
                 break;
             }
         }
-        // 当end
+        // 当end>=0就表示文首是有的
         if (end >= 0) {
             ws = new ArrayList<String>();
         }
@@ -175,6 +175,7 @@ public class WsAnalyseImpl implements WsAnalyse {
         for (int i = 0; i < wsnrList.size() && i < end + 1; i++) {
             Matcher matcher = p.matcher(wsnrList.get(i));
             if (matcher.find() && FcUtil.getWholeToken(wsnrList.get(i)).size() < 15) {
+                //只有那些文首分词数目在15以下的才算是文首，估计有某些意外的情况需要这个限定
                 ws.add(wsnrList.get(i));
             }
         }
@@ -182,39 +183,379 @@ public class WsAnalyseImpl implements WsAnalyse {
 
     @Override
     public void hfSscyr() {
+        int pre = ++end;
+        for (int i = end; i < wsnrList.size(); i++) {
+            if(wsnrList.get(i).contains("一案")){
+                end=i;
+                break;
+            }
+            String sj = getContent(wsnrList.get(i));  //这里是获取这一段落的首句
+            if (isNotSscyr(sj)) {
+                end = i;
+                break;
+            }
+            if (likeSscyr(sj)) {
+                continue;
+            } else {
+                if (i + 1 < wsnrList.size()) {
+                    sj = getContent(wsnrList.get(i + 1));
+                    if (isNotSscyr(sj)) {
+                        end = i;
+                        break;
+                    }
+                    if (!likeSscyr(sj)) {
+                        end = i;
+                        break;
+                    }
+                }
+            }
+        }
+        if (end > pre) {
+            sscyr = new ArrayList<>();
+        }
+        end--;
+        for (int i = pre; i < end + 1 && i < wsnrList.size(); i++) {
+            sscyr.add(wsnrList.get(i));
+        }
+    }
 
+    /**
+     * 根据首句的分词来判断，小于10个分词的有可能是诉讼参与人
+     *
+     * @param words
+     * @return
+     */
+    public boolean likeSscyr(String words) {
+        List<String> list = FcUtil.getWholeToken(words);
+        return list.size() >= 15 ? false : true;
+    }
+
+    /**
+     * 判断肯定不是诉讼参与人
+     *
+     * @param words
+     * @return
+     */
+    private boolean isNotSscyr(String words) {
+        /**
+         * 没有诉讼地位的敏感词 有诉称 辨称 一案 不服 纠纷 或者同时出现原被告 分词大于15 或者有本院 有认为 有认定 的都不可能是诉讼参与人
+         */
+        if (words.contains("诉称") || words.contains("辨称")
+                || words.contains("一案") || words.contains("不服")
+                || words.contains("纠纷")||words.contains("起诉书")
+                || (words.contains("原告") && words.contains("被告"))
+                || !HeadEnum.HasHead(words)
+                || words.contains("本院") || words.contains("认为")
+                || words.contains("认定"))
+
+            return true;
+        return false;
+    }
+
+    /**
+     * 获取首句截取的内容
+     *
+     * @param str
+     * @return
+     */
+    public static  String getContent(String str) {
+        String temp=deBracket(str);
+        int dh = (temp.indexOf("，")!=-1?temp.indexOf("，"):temp.indexOf(","));
+        int jh = (temp.indexOf("。")!=-1?temp.indexOf("。"):temp.indexOf("."));
+        int max = 0;
+        if (dh == -1) {
+            max = jh;
+        } else if (jh == -1) {
+            max = dh;
+        } else {
+            max = jh > dh ? dh : jh;
+        }
+        String content = "";
+        try {
+            content = temp.substring(0, max);
+        } catch (Exception e) {
+        }
+        return content;
+    }
+
+    /**
+     * 去掉括号
+     *
+     * @param content
+     * @return
+     */
+    public static  String  deBracket(String content) {
+        int count=20;
+        while (((content.indexOf("（") != -1 && content.indexOf("）") != -1)
+                || (content.indexOf("(") != -1 && content.indexOf(")") != -1))&&count>0) {
+            count--;
+            int left = content.indexOf("（");
+            int right = content.indexOf("）");
+            if (left != -1) {
+                if (right != -1) {
+                    content = content.substring(0, left)
+                            + content
+                            .substring(right + 1, content.length());
+                }
+            }
+            left = content.indexOf("(");
+            right = content.indexOf(")");
+            if (left != -1) {
+                if (right != -1) {
+                    content = content.substring(0, left)
+                            + content
+                            .substring(right + 1, content.length());
+                }
+            }
+        }
+        return content;
+    }
+
+    /**
+     * 取得括号中的内容,不存在则返回null
+     * @param content
+     * @return
+     */
+    public static  String  takeBracket(String content) {
+        if ((content.indexOf("（") != -1 && content.indexOf("）") != -1)
+                || (content.indexOf("(") != -1 && content.indexOf(")") != -1)) {
+            int left = content.indexOf("（");
+            int right = content.indexOf("）");
+            if (left != -1) {
+                if (right != -1) {
+                    if (left+1<right)
+                        content = content.substring(left+1,right);
+                }
+            }
+            left = content.indexOf("(");
+            right = content.indexOf(")");
+            if (left != -1) {
+                if (right != -1) {
+                    content = content.substring(left+1, right);
+                }
+            }
+        }else{
+            content=null;
+        }
+        return content;
+    }
+    /**
+     * 获取截取的内容
+     *
+     * @param str
+     * @return
+     */
+    public static  ArrayList<String> getWholeContent(String str) {
+        ArrayList<String> contentlist= new ArrayList<String>();
+        String[] jhsplit=str.split("。");
+        for(int i=0;i<jhsplit.length;i++){
+            String content=jhsplit[i];
+            String []dhsplit=content.split("，");
+            for(int j=0;j<dhsplit.length;j++){
+                String dhcontent=dhsplit[j];
+                String []fhsplit=dhcontent.split("；");
+                for(int k=0;k<fhsplit.length;k++){
+                    if(fhsplit[k].length()>0){
+                        contentlist.add(fhsplit[k]);
+                    }
+                }
+            }
+        }
+        return contentlist;
     }
 
     @Override
     public void hfAjjbqk() {
-
+        ajjbqkpre++;
+        if (ajjbqkpre < ajjbqkend) {
+            ajjbqk = new ArrayList<String>();
+        }
+        for (int i = ajjbqkpre; i <ajjbqkend && i < wsnrList.size(); i++) {
+            ajjbqk.add(wsnrList.get(i));
+        }
     }
 
     @Override
     public void hfSsjl() {
+        int pre=++end;
+        ajjbqkpre=pre;
+        ssjl=wsnrList.get(pre);
 
     }
 
     @Override
     public void hfCpfxgc() {
+        int pre = 0;
+        boolean b=false;
+        for(int i=wsnrList.size()-1;i>=end;i--){
+            if(isCpfxgc_1(wsnrList.get(i))){
+                pre = i;
+                ajjbqkend=i;
+                b=true;
+                break;
+            }
+        }
+        if(b==false){
+            for(int i=wsnrList.size()-1;i>=end;i--){
+                if(isCpfxgc_2(wsnrList.get(i))){
+                    pre = i;
+                    ajjbqkend=i;
+                    b=true;
+                    break;
+                }
+            }
+        }
+        if(ajjbqkend!=0){
+            for (int i = pre; i < wsnrList.size(); i++) {
+                if (isCpfxgcEnd(wsnrList.get(i))) {
+                    end = i+1;
+                    break;
+                }
+            }
+            if (end > pre) {
+                cpfxgc=new ArrayList<String>();
+            }
+            end--;
+            for (int i = pre; i < end + 1 && i < wsnrList.size(); i++) {
+                cpfxgc.add(wsnrList.get(i));
+            }
+        }
+    }
 
+    private boolean isCpfxgc_1(String word) {
+        if ( word.indexOf("本院认为")==0|| word.indexOf("本院经审理认为")==0
+                || word.indexOf("本院经审查认为")==0 ||word.contains("主持调解")
+                || word.indexOf("本院审查认为")==0 )
+            //		if (word.contains(" 本院认为") || word.contains(" 本院经审查认为"))
+            return true;
+        if(word.contains("达成协议如下"))
+            return true;
+        return false;
+    }
+    private boolean isCpfxgc_2(String word) {
+        if ( word.contains("本院认为")|| word.contains("本院经审理认为")
+                || word.contains("本院经审查认为")||word.contains("主持调解")
+                ||word.contains("本院审查认为") )
+            //		if (word.contains(" 本院认为") || word.contains(" 本院经审查认为"))
+            return true;
+        if(word.contains("达成协议如下"))
+            return true;
+        return false;
+    }
+
+    private boolean isCpfxgcEnd(String word) {
+        if (word.contains("裁定如下") || word.contains("判决如下")
+                || word.contains("决定如下"))
+            return true;
+        return false;
     }
 
     @Override
     public void hfCpjg() {
-
+        if(ajjbqkend!=0){
+            int pre = ++end;
+            for (int i = end; i < wsnrList.size(); i++) {
+                if (isCpjgEnd(wsnrList.get(i))) {
+                    end = i;
+                    break;
+                }
+            }
+            if (end > pre) {
+                cpjg=new ArrayList<String>();
+            }
+            end--;
+            for (int i = pre; i < end + 1 && i < wsnrList.size(); i++) {
+                cpjg.add(wsnrList.get(i));
+            }
+        }else{
+            int pre=0;
+            for(int i=wsnrList.size()-1;i>=end;i--){
+                if(isCpfxgcEnd(wsnrList.get(i))){
+                    pre=i+1;
+                    ajjbqkend=i;
+                    break;
+                }
+            }
+            for (int i = pre; i < wsnrList.size(); i++) {
+                if (isCpjgEnd(wsnrList.get(i))) {
+                    end = i;
+                    break;
+                }
+            }
+            if (end > pre) {
+                cpjg=new ArrayList<String>();
+            }
+            end--;
+            for (int i = pre; i < end + 1 && i < wsnrList.size(); i++) {
+                cpjg.add(wsnrList.get(i));
+            }
+        }
     }
 
     @Override
     public void hfWw() {
-
+        int pre = ++end;
+        boolean wwend=false;
+        for (int i = end; i < wsnrList.size(); i++) {
+            if (isWwEnd(wsnrList.get(i))) {
+                wwend=true;
+                end = i+1;
+                break;
+            }
+            if(wsnrList.get(i).contains("附")){
+                wwend=true;
+                end = i;
+                break;
+            }
+            if(isFlEnd(wsnrList.get(i))){
+                wwend=true;
+                end=i;
+                break;
+            }
+        }
+        if(wwend==false)
+            end=wsnrList.size();
+        if (end > pre) {
+            ww=new ArrayList<String>();
+        }
+        end--;
+        for (int i = pre; i < end + 1 && i < wsnrList.size(); i++) {
+            ww.add(wsnrList.get(i));
+        }
     }
 
+    private boolean isWwEnd(String word) {
+        if (word.contains("速录") && word.contains("书记")){
+            return true;
+        }
+        else if (word.indexOf("速录")>-1){
+            return true;
+        }
+        return false;
+    }
     @Override
     public void hfFl() {
-
+        int pre = ++end;
+        for (int i = end; i < wsnrList.size(); i++) {
+            if (isFlEnd(wsnrList.get(i))) {
+                end = i;
+                break;
+            }
+        }
+        if (end > pre) {
+            fl=new ArrayList<String>();
+        }
+        end--;
+        for (int i = pre; i < end + 1 && i < wsnrList.size(); i++) {
+            fl.add(wsnrList.get(i));
+        }
     }
 
+    private boolean isFlEnd(String word) {
+        if (word.contains("PAGE"))
+            return true;
+        return false;
+    }
     public String getWswjm() {
         return wswjm;
     }

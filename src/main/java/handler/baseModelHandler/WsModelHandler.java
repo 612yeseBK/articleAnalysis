@@ -1,4 +1,4 @@
-package handler;
+package handler.baseModelHandler;
 
 import model.WswsModel;
 
@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * description:
+ * description:用来处理文首的信息
  * Created by gaoyw on 2018/12/4.
  */
 public class WsModelHandler {

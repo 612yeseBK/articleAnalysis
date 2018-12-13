@@ -91,5 +91,6 @@
     <orderEntry type="library" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.poi:poi-scratchpad:3.9" level="project" />
     <orderEntry type="library" name="Maven: org.wltea.analyzer:ikAnalyzer:2012_V5" level="project" />
+    <orderEntry type="library" name="Maven: org.jdom:jdom:1.1" level="project" />
   </component>
 </module>

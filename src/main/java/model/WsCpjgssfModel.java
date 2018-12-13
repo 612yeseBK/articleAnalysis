@@ -3,15 +3,15 @@ package model;
 import java.util.List;
 
 /**
- * description:
+ * description:裁判结果诉讼费
  * Created by gaoyw on 2018/12/10.
  */
 public class WsCpjgssfModel {
     private String ssfjl;
-    private List<WsCpjgssfjeModel> ssfjeModels;
-    private List<WscpjgssfcdModel> ssfcdModels;
-    private String jnqk;
-    private String zje;
+    private List<WsCpjgssfjeModel> ssfjeModels; //诉讼费金额
+    private List<WscpjgssfcdModel> ssfcdModels;  //诉讼费承担
+    private String jnqk;  //
+    private String zje; //总金额
 
     public WsCpjgssfModel() {
     }

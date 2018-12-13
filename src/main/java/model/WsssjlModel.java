@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * description:
+ * description:诉讼记录
  * Created by gaoyw on 2018/12/10.
  */
 public class WsssjlModel {

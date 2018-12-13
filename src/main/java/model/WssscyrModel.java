@@ -3,39 +3,39 @@ package model;
 import java.util.List;
 
 /**
- * description:
+ * description:诉讼参与人
  * Created by gaoyw on 2018/12/10.
  */
 public class WssscyrModel {
     private String sscyrallinfo;
-    private String sscyr;
-    private String sssf;
-    private String dsrlx;
-    private String mz;
+    private String sscyr;  //诉讼参与人
+    private String sssf;  //诉讼身份
+    private String dsrlx;  //当事人类型
+    private String mz;  //名字
     private String csrq;
     private String zjlx;
-    private String zjhm;
-    private String dsrdz;
-    private String dsrzw;
-    private String zrrsf;
-    private String dsrwhcd;
-    private String dsrxw;
-    private String xb;
-    private String dtqk;
-    private String gj;
+    private String zjhm;  //
+    private String dsrdz;  //当事人地址
+    private String dsrzw;  //当事人职务
+    private String zrrsf;  //
+    private String dsrwhcd; //当事人文化程度
+    private String dsrxw;  //当事人
+    private String xb;  //性别
+    private String dtqk; //到庭情况
+    private String gj;  //国籍
     private String year;
     private String month;
     private String day;
-    private String ssdw;
+    private String ssdw;  //
     private String ysssdw;
-    private String dsrlb;
-    private String dwxz;
-    private String fddbr;
-    private String gzdw;
-    private String gzdwxz;
-    private String dsrsfzh;
-    private String tshy;
-    private String xzfagxzt;
+    private String dsrlb; //当事人类别
+    private String dwxz;  //单位性质
+    private String fddbr;  //法定代表人
+    private String gzdw;  //工作单位
+    private String gzdwxz;  //工作单位性质
+    private String dsrsfzh;  //
+    private String tshy;  //特殊行业
+    private String xzfagxzt;  //
     private String bglx;
     private String zzjgdm;
     private String xzglfw;

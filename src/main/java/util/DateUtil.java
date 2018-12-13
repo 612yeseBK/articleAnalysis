@@ -459,4 +459,48 @@ public class DateUtil {
                     DateUtil.webFormat);
         return begin;
     }
+
+    private static String convertCNToNum(String cnNumStr) {
+        String allCNNum = "o○〇０OΟO零-一二三四五六七八九";
+        String allNum = "000000001123456789";
+        StringBuffer buf = new StringBuffer();
+
+        for(int i = 0; i < cnNumStr.length(); ++i) {
+            char c = cnNumStr.charAt(i);
+            int index = allCNNum.indexOf(c);
+            if (index != -1) {
+                buf.append(allNum.charAt(index));
+            } else {
+                buf.append(c);
+            }
+        }
+
+        return buf.toString();
+    }
+
+    private static String convertCNDateNum(String cnNum) {
+        if (cnNum.length() == 1) {
+            return cnNum.equals("十") ? "10" : convertCNToNum(cnNum);
+        } else if (cnNum.length() == 2) {
+            if (cnNum.startsWith("十")) {
+                return "1" + convertCNToNum(cnNum.substring(1, 2));
+            } else {
+                return cnNum.endsWith("十") ? convertCNToNum(cnNum.substring(0, 1)) + "0" : convertCNToNum(cnNum);
+            }
+        } else {
+            return cnNum.length() == 3 ? convertCNToNum(cnNum.substring(0, 1) + cnNum.substring(2, 3)) : null;
+        }
+    }
+
+    public static String convertToCNDate(String cndate) {
+        int yearPos = cndate.indexOf("年");
+        int monthPos = cndate.indexOf("月");
+        String cnYear = cndate.substring(0, yearPos);
+        String cnMonth = cndate.substring(yearPos + 1, monthPos);
+        String cnDay = cndate.substring(monthPos + 1, cndate.length() - 1);
+        String year = convertCNToNum(cnYear);
+        String month = convertCNDateNum(cnMonth);
+        String day = convertCNDateNum(cnDay);
+        return year + "年" + month + "月" + day + "日";
+    }
 }

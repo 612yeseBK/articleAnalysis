@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 
 /**
- * description:
+ * description:裁判分析过程zdlx
  * Created by gaoyw on 2018/12/10.
  */
 public class WscpfxgcZdlxModel {

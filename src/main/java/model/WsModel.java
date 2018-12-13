@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * description:
+ * description:文书
  * Created by gaoyw on 2018/12/10.
  */
 public class WsModel implements Serializable {

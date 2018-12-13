@@ -1,6 +1,5 @@
-import handler.WsModelHandler;
+import handler.baseModelHandler.WsModelHandler;
 import model.WswsModel;
-import service.WsAnalyse;
 import service.impl.WsAnalyseImpl;
 import util.FcUtil;
 import util.FileUtil;
@@ -14,8 +13,8 @@ import java.util.Scanner;
  * description:
  * Created by gaoyw on 2018/12/10.
  */
-public class WsjxWordTxt {
-    public WsjxWordTxt() {
+public class WsjxMain {
+    public WsjxMain() {
     }
 
     public static String format(String qw) {
@@ -106,16 +105,16 @@ public class WsjxWordTxt {
                 String ajlx = wswsModel.getAjlx();
                 if (StringUtil.contains(ajlx, "民事二审")) {
                     wsManager.jxMses(wsAnalyseImpl, wsnr, inputpath, outputpath, filename[j]);
-                } else if (StringUtil.contains(ajlx, "民事一审")) {
-                    wsManager.jxMsys(wsAnalyseImpl, wsnr, inputpath, outputpath, filename[j]);
-                } else if (StringUtil.contains(ajlx, "行政一审")) {
-                    wsManager.jxXzys(wsAnalyseImpl, wsnr, inputpath, outputpath, filename[j]);
-                } else if (StringUtil.contains(ajlx, "刑事一审")) {
-                    wsManager.jxXsys(wsAnalyseImpl, wsnr, inputpath, outputpath, filename[j]);
-                } else if (StringUtil.contains(ajlx, "行政二审")) {
-                    wsManager.jxXzes(wsAnalyseImpl, wsnr, inputpath, outputpath, filename[j]);
-                } else if (StringUtil.contains(ajlx, "刑事二审")) {
-                    wsManager.jxXses(wsAnalyseImpl, wsnr, inputpath, outputpath, filename[j]);
+//                } else if (StringUtil.contains(ajlx, "民事一审")) {
+//                    wsManager.jxMsys(wsAnalyseImpl, wsnr, inputpath, outputpath, filename[j]);
+//                } else if (StringUtil.contains(ajlx, "行政一审")) {
+//                    wsManager.jxXzys(wsAnalyseImpl, wsnr, inputpath, outputpath, filename[j]);
+//                } else if (StringUtil.contains(ajlx, "刑事一审")) {
+//                    wsManager.jxXsys(wsAnalyseImpl, wsnr, inputpath, outputpath, filename[j]);
+//                } else if (StringUtil.contains(ajlx, "行政二审")) {
+//                    wsManager.jxXzes(wsAnalyseImpl, wsnr, inputpath, outputpath, filename[j]);
+//                } else if (StringUtil.contains(ajlx, "刑事二审")) {
+//                    wsManager.jxXses(wsAnalyseImpl, wsnr, inputpath, outputpath, filename[j]);
                 }
             } catch (Exception var14) {
                 System.out.println("无法解析" + filename[j]);
